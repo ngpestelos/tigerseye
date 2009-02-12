@@ -1,0 +1,6 @@
+Tigerseye.egg-info
+build
+dist
+*.pyc
+*.swp
+google-reader-subscriptions.xml
