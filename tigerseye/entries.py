@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-
+#
+# Copyright (C) 2009 Nestor G Pestelos Jr
+# All rights reserved.
+#
+# This software is licensed as described in the file COPYING, which
+# you should have received as part of this distribution.
 """ A module for capturing feed entries. 
 
     Creates a Document for each feed URL, with its list of entries.
@@ -38,5 +43,3 @@ def load_from_dir(feed_dir, dbname='feeds'):
             create_document(db, d.feed.link, d.feed.title, d.entries)
         except:
             print "Problem with feed %s" % f
-
-load_from_dir('/n/data/feeds')
