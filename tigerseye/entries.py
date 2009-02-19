@@ -28,19 +28,19 @@ def create_views(dbname='feeds'):
     doc = {
       "language": "javascript",
       "views": {
-        "by_link": {
+        "urls": {
+          "map": """function(doc) {
+                      if (doc.type == 'entries') emit(doc.link, null);
+                    }"""
+        },
+        "by_url": {
           "map": """function(doc) {
                       if (doc.type == 'entries') emit(doc.link, doc);
                     }"""
         },
-        "by_id": {
+        "ids": {
           "map": """function(doc) {
-                      if (doc.type == 'entries') emit(doc._id, doc);
-                    }"""
-        },
-        "urls": {
-          "map": """function(doc) {
-                      if (doc.type == 'entries') emit(doc.link, null);
+                      if (doc.type == 'entries') emit(doc._id, null);
                     }"""
         }
       }
@@ -57,11 +57,6 @@ def get_wordlist(url, dbname='feeds'):
     
     Create a table for word occurrences."""
     pass
-
-def all(dbname='feeds'):
-    "Returns a list of Document IDs."
-    db = Server()[dbname]
-    return [r.key for r in db.view('entries/by_id')]
 
 def get_urls(dbname='feeds'):
     "Returns a list of URLs."
@@ -84,18 +79,22 @@ def get_random_url(size=1, dbname='feeds'):
 def get_document(url, dbname='feeds'):
     "Return a Document for a URL. A Document may contain a list of entries."
     db = Server()[dbname]
-    return [r.value for r in db.view('entries/by_link', key=url)][0]
+    return [r.value for r in db.view('entries/by_url', key=url)][0]
 
 def get_entries(url, dbname='feeds'):
     doc = get_document(url, dbname)
     return doc['entries']
+
+def get_ids(dbname='feeds'):
+    "Return a list of Document IDs."
+    db = Server()[dbname]
+    return [r.key for r in db.view('entries/ids')]
 
 def load_from_dir(feed_dir, dbname='feeds'):
     """Import from a group of feed dumps.
 
     >>>> entries.load_from_dir('/path/to/dumps', 'feed_database')
     """
-
     def create_document(db, link, title, entries):
         print "Creating document for %s" % link
         stripped = []
