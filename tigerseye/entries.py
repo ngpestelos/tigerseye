@@ -12,7 +12,7 @@
 from glob import glob
 import feedparser
 from couchdb import Server
-import hashlib, random
+import hashlib, random, re
 
 def mark_as_failed(url):
     "Create a record indicating a problem on feed capture"
@@ -48,20 +48,41 @@ def create_views(dbname='feeds'):
     db = Server()[dbname]
     db['_design/entries'] = doc
 
+def get_wordlist(url, dbname='feeds'):
+    """Creates a word vector (frequency table of words) from the URL's entries.
+
+    Strips out the HTML tags for each entry.
+
+    Forms a large list by appending all the words for each entry.
+    
+    Create a table for word occurrences."""
+    pass
+
 def all(dbname='feeds'):
+    "Returns a list of Document IDs."
     db = Server()[dbname]
     return [r.key for r in db.view('entries/by_id')]
 
 def get_urls(dbname='feeds'):
+    "Returns a list of URLs."
     db = Server()[dbname]
     return [r.key for r in db.view('entries/urls')]
 
-def get_random_url(dbname='feeds'):
-    "I'm feeling lucky."
+def get_random_url(size=1, dbname='feeds'):
+    "Returns a random list of URLs"
     urls = get_urls(dbname)
-    return urls[random.randint(0, len(urls))]
+    urlcount = 0
+    sublist = []
+    if size < 0:
+        return []
+    while urlcount < size:
+        # TODO: handle duplicate URLs
+        sublist.append(urls[random.randint(0, len(urls))])
+        urlcount += 1
+    return sublist
 
 def get_document(url, dbname='feeds'):
+    "Return a Document for a URL. A Document may contain a list of entries."
     db = Server()[dbname]
     return [r.value for r in db.view('entries/by_link', key=url)][0]
 
