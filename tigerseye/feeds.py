@@ -30,8 +30,8 @@ def load_outline(db, outline, ref=None):
     htmlUrl = outline.get('htmlUrl', '')
     children = outline.get('outlines', [])
     row = {'text': outline.get('text', ''), 'title': outline.get('title', ''), \
-      'type': outline.get('type', ''), 'xmlUrl': outline.get('xmlUrl', ''), \
-      'htmlUrl': outline.get('htmlUrl', '')}
+      'feedtype': outline.get('type', ''), 'xmlUrl': outline.get('xmlUrl', ''), \
+      'htmlUrl': outline.get('htmlUrl', ''), 'type': 'feed'}
     if ref:
         row['ref'] = ref
     docId = db.create(row)
