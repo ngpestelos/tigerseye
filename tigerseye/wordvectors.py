@@ -49,3 +49,20 @@ def create_views(dbname='feeds'):
 def save_counts(link, wc, dbname='feeds'):
     db = Server()[dbname]
     db.create({'link': link, 'type': 'wordvector', 'words': wc})
+
+def get_urls(dbname='feeds'):
+    db = Server()[dbname]
+    return [r.key for r in db.view('wordvectors/urls')]
+
+def delete_all(dbname='feeds'):
+    "Delete all word vectors."
+    for id in get_ids(dbname):
+
+def strip_all(dbname='feeds'):
+    "Strip all words from feeds."
+    db = Server()[dbname]
+    for id in entries.get_ids(dbname):
+        doc = db[id]
+        print "Stripping words from %s" % doc['link']
+        wc = getwordcounts(doc['link'])
+        save_counts(doc['link'], wc, dbname)
