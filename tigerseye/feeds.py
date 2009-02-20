@@ -53,6 +53,11 @@ def create_views(dbname='feeds'):
           "map": """function(doc) {
                       if (doc.type == 'feed') emit (doc.xmlUrl, null);
                     }"""
+        },
+        "ids": {
+          "map": """function(doc) {
+                      if (doc.type == 'feed') emit (doc._id, null);
+                    }"""
         }
       }
     }
