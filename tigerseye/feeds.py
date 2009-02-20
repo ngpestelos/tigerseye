@@ -14,6 +14,7 @@
 
 from citrine import parser
 from couchdb import Server
+import random, picker
 
 def load_from_opml(filename, dbname='feeds'):
     "Load feeds from OPML to a CouchDB database"
@@ -63,3 +64,26 @@ def create_views(dbname='feeds'):
     }
     db = Server()[dbname]
     db['_design/feeds'] = doc
+
+def get_ids(dbname='feeds'):
+    "Return all Document IDs for feeds."
+    db = Server()[dbname]
+    return [r.key for r in db.view('feeds/ids')]
+
+def get_urls(dbname='feeds'):
+    "Return all URLs for feeds."
+    db = Server()[dbname]
+    return [r.key for r in db.view('feeds/urls')]
+
+def delete_all(dbname='feeds'):
+    "Remove all feed Documents"
+    db = Server()[dbname]
+    for id in get_ids(dbname):
+        doc = db[id]
+        print "Deleting %s" % doc['xmlUrl']
+        db.delete(doc)
+
+def get_random_url(size=1, dbname='feeds'):
+    "Returns a random list of URLs"
+    urls = get_urls(dbname)
+    return picker.pick_sublist(urls, size)
