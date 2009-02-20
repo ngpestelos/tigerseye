@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2009 Nestor G Pestelos Jr
+# All rights reserved.
+#
+# This software is licensed as described in the file COPYING, which
+# you should have received as part of this distribution.
 """Build a frequency table of words in a feed.
 
 Based on code from Programming Collective Intelligence (Discovering Groups)."""
@@ -54,9 +61,13 @@ def get_urls(dbname='feeds'):
     db = Server()[dbname]
     return [r.key for r in db.view('wordvectors/urls')]
 
+def get_ids(dbname='feeds'):
+    pass 
+
 def delete_all(dbname='feeds'):
     "Delete all word vectors."
-    for id in get_ids(dbname):
+    #for id in get_ids(dbname):
+    pass
 
 def strip_all(dbname='feeds'):
     "Strip all words from feeds."
