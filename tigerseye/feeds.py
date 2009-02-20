@@ -38,3 +38,23 @@ def load_outline(db, outline, ref=None):
     print "Loading outline from %s" % xmlUrl
     for child_outline in children:
         load_outline(db, child_outline, docId)
+
+def delete_views(dbname='feeds'):
+    "Delete views related to feeds."
+    db = Server()[dbname]
+    del db['_design/feeds']
+
+def create_views(dbname='feeds'):
+    "Create views for feeds."
+    doc = {
+      "language": "javascript",
+      "views": {
+        "urls": {
+          "map": """function(doc) {
+                      if (doc.type == 'feed') emit (doc.xmlUrl, null);
+                    }"""
+        }
+      }
+    }
+    db = Server()[dbname]
+    db['_design/feeds'] = doc
