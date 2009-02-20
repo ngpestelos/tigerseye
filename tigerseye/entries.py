@@ -48,20 +48,18 @@ def create_views(dbname='feeds'):
     db = Server()[dbname]
     db['_design/entries'] = doc
 
-def get_wordlist(url, dbname='feeds'):
-    """Creates a word vector (frequency table of words) from the URL's entries.
-
-    Strips out the HTML tags for each entry.
-
-    Forms a large list by appending all the words for each entry.
-    
-    Create a table for word occurrences."""
-    pass
-
 def get_urls(dbname='feeds'):
     "Returns a list of URLs."
     db = Server()[dbname]
     return [r.key for r in db.view('entries/urls')]
+
+def delete_all(dbname='feeds'):
+    "Removes all feeds with entries"
+    db = Server()[dbname]
+    for id in get_ids(dbname):
+        doc = db[id]
+        print "Deleting %s" % doc['link']
+        db.delete(doc)
 
 def get_random_url(size=1, dbname='feeds'):
     "Returns a random list of URLs"
