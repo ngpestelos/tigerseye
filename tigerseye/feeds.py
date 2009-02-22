@@ -16,7 +16,7 @@ from citrine import parser
 from couchdb import Server
 import random, picker
 
-def load_from_opml(filename, dbname='feeds'):
+def load_from_opml(filename, dbname):
     "Load feeds from OPML to a CouchDB database"
     outlines = parser.get_outlines(filename)
     db = Server()[dbname]
@@ -40,12 +40,12 @@ def load_outline(db, outline, ref=None):
     for child_outline in children:
         load_outline(db, child_outline, docId)
 
-def delete_views(dbname='feeds'):
+def delete_views(dbname):
     "Delete views related to feeds."
     db = Server()[dbname]
     del db['_design/feeds']
 
-def create_views(dbname='feeds'):
+def create_views(dbname):
     "Create views for feeds."
     doc = {
       "language": "javascript",
@@ -65,17 +65,17 @@ def create_views(dbname='feeds'):
     db = Server()[dbname]
     db['_design/feeds'] = doc
 
-def get_ids(dbname='feeds'):
+def get_ids(dbname):
     "Return all Document IDs for feeds."
     db = Server()[dbname]
     return [r.key for r in db.view('feeds/ids')]
 
-def get_urls(dbname='feeds'):
+def get_urls(dbname):
     "Return all URLs for feeds."
     db = Server()[dbname]
     return [r.key for r in db.view('feeds/urls')]
 
-def delete_all(dbname='feeds'):
+def delete_all(dbname):
     "Remove all feed Documents"
     db = Server()[dbname]
     for id in get_ids(dbname):
@@ -83,7 +83,7 @@ def delete_all(dbname='feeds'):
         print "Deleting %s" % doc['xmlUrl']
         db.delete(doc)
 
-def get_random_url(size=1, dbname='feeds'):
+def get_random_url(dbname, size=1):
     "Returns a random list of URLs"
     urls = get_urls(dbname)
     return picker.pick_sublist(urls, size)
