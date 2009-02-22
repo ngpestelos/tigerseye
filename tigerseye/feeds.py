@@ -10,6 +10,8 @@
 
 >>>> from tigerseye import feeds
 >>>> feeds.load_from_opml('my_opml_file.xml', 'mydatabase')
+
+>>>> feeds.create_views('mydatabase')
 """
 
 from citrine import parser
@@ -87,3 +89,12 @@ def get_random_url(dbname, size=1):
     "Returns a random list of URLs"
     urls = get_urls(dbname)
     return picker.pick_sublist(urls, size)
+
+def feed_exists(url, dbname):
+    "Checks the database if the feed URL exists."
+    db = Server()[dbname]
+    res = [r.key for r in db.view('feeds/urls', key=url)]
+    if res:
+        return True
+    else:
+        return False
