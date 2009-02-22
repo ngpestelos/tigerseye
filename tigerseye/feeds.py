@@ -28,11 +28,19 @@ def load_from_opml(filename, dbname):
 def load_outline(db, outline, ref=None):
     """Creates a Document for each outline.
 
-    Stores reference information (i.e., outlines nested among other outlines)"""
+    Stores reference information (i.e., outlines nested among other outlines)
+
+    Checks first if the URL exists.
+"""
+
     xmlUrl = outline.get('xmlUrl', '')
+    title = outline.get('title', '')
+    if feed_exists(db, xmlUrl, title):
+        return
+
     htmlUrl = outline.get('htmlUrl', '')
     children = outline.get('outlines', [])
-    row = {'text': outline.get('text', ''), 'title': outline.get('title', ''), \
+    row = {'text': outline.get('text', ''), 'title': title, \
       'feedtype': outline.get('type', ''), 'xmlUrl': outline.get('xmlUrl', ''), \
       'htmlUrl': outline.get('htmlUrl', ''), 'type': 'feed'}
     if ref:
@@ -60,6 +68,12 @@ def create_views(dbname):
         "ids": {
           "map": """function(doc) {
                       if (doc.type == 'feed') emit (doc._id, null);
+                    }"""
+        },
+        "titles": {
+          "map": """function(doc) {
+                      if (doc.type == 'feed')
+                        emit([doc.title, doc._id], null);
                     }"""
         }
       }
@@ -90,11 +104,11 @@ def get_random_url(dbname, size=1):
     urls = get_urls(dbname)
     return picker.pick_sublist(urls, size)
 
-def feed_exists(url, dbname):
-    "Checks the database if the feed URL exists."
-    db = Server()[dbname]
-    res = [r.key for r in db.view('feeds/urls', key=url)]
-    if res:
+def feed_exists(db, url, title):
+    "Checks the database if either the feed URL or feed title exists."
+    urlfound = [r.key for r in db.view('feeds/urls', key=url)]
+    titlefound = [r.key for r in db.view('feeds/titles', key=title)]
+    if urlfound or titlefound:
         return True
     else:
         return False
