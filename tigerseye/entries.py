@@ -19,12 +19,12 @@ def mark_as_failed(url):
     "Create a record indicating a problem on feed capture"
     pass
 
-def delete_views(dbname='feeds'):
+def delete_views(dbname):
     "Delete views related to entries."
     db = Server()[dbname]
     del db['_design/entries']
 
-def create_views(dbname='feeds'):
+def create_views(dbname):
     "Create views for entries."
     doc = {
       "language": "javascript",
@@ -49,12 +49,12 @@ def create_views(dbname='feeds'):
     db = Server()[dbname]
     db['_design/entries'] = doc
 
-def get_urls(dbname='feeds'):
+def get_urls(dbname):
     "Returns a list of URLs."
     db = Server()[dbname]
     return [r.key for r in db.view('entries/urls')]
 
-def delete_all(dbname='feeds'):
+def delete_all(dbname):
     "Removes all feeds with entries"
     db = Server()[dbname]
     for id in get_ids(dbname):
@@ -62,7 +62,7 @@ def delete_all(dbname='feeds'):
         print "Deleting %s" % doc['link']
         db.delete(doc)
 
-def get_random_url(size=1, dbname='feeds'):
+def get_random_url(dbname, size=1):
     "Returns a random list of URLs"
     urls = get_urls(dbname)
     urlcount = 0
@@ -75,21 +75,21 @@ def get_random_url(size=1, dbname='feeds'):
         urlcount += 1
     return sublist
 
-def get_document(url, dbname='feeds'):
+def get_document(url, dbname):
     "Return a Document for a URL. A Document may contain a list of entries."
     db = Server()[dbname]
     return [r.value for r in db.view('entries/by_url', key=url)][0]
 
-def get_entries(url, dbname='feeds'):
+def get_entries(url, dbname):
     doc = get_document(url, dbname)
     return doc['entries']
 
-def get_ids(dbname='feeds'):
+def get_ids(dbname):
     "Return a list of Document IDs."
     db = Server()[dbname]
     return [r.key for r in db.view('entries/ids')]
 
-def load_from_dir(feed_dir, dbname='feeds'):
+def load_from_dir(feed_dir, dbname):
     """Import from a group of feed dumps.
 
     >>>> entries.load_from_dir('/path/to/dumps', 'feed_database')
