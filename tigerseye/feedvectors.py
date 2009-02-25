@@ -20,6 +20,16 @@ Based on code from Programming Collective Intelligence (Discovering Groups)
 from couchdb import Server
 import entries, stripper
 
+def get_ids(dbname):
+    "Return a list of Document IDs."
+    db = Server()[dbname]
+    return [r.key for r in db.view('feedvectors/ids')]
+
+def delete_all(dbname):
+    "Delete feed vectors"
+    db = Server()[dbname]
+    pass 
+
 def strip_all(srcdbname, destdbname):
     "Strip all words from feeds' entries."
     srcdb = Server()[srcdbname]
@@ -46,6 +56,11 @@ def create_views(dbname):
         "all": {
           "map": """function(doc) {
                       if (doc.type == 'feedvectors') emit(doc.url, doc);
+                    }"""
+        },
+        "ids": {
+          "map": """function(doc) {
+                      if (doc.type == 'feedvectors') emit(doc._id, null);
                     }"""
         }
       }

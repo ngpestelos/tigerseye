@@ -13,6 +13,9 @@
 
 import re
 
+stopwords = ['and', 'or', 'the', 'a', 'of', 'to', 'in', 'is', 'it', 'for', \
+  'at', 'on', 'with', 'which', 'this', 'that', 'as', 'be']
+
 def getwords(html):
     """Strips out markup from some text.
 
@@ -20,7 +23,8 @@ def getwords(html):
     """
     txt = re.compile(r'<[^>]+>').sub('', html)
     words = re.compile(r'\W*').split(txt)
-    return [word.lower() for word in words if word != '']
+    lowercase = [word.lower() for word in words if len(words) > 1]
+    return [w for w in lowercase if w not in stopwords]
 
 def getwordcounts(txt):
     """Count the number of words in a string.
