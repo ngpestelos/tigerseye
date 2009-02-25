@@ -14,8 +14,8 @@ Based on code from Programming Collective Intelligence (Discovering Groups)
 from couchdb import Server
 import entries, stripper
 
-def strip_all(dbname='feeds'):
-    "Strip all words from feeds with entries."
+def strip_all(dbname):
+    "Strip all words from feeds' entries."
     db = Server()[dbname]
     for id in entries.get_ids(dbname):
         doc = db[id]
@@ -24,17 +24,14 @@ def strip_all(dbname='feeds'):
         for e in doc['entries']:
             wc = stripper.getwordcounts(e['description'])
             entrywords[e['title']] = wc
-        save(db, doc['link'], entrywords)
+        db.create({'url': url, 'words': vectors, 'type': 'feedvectors'})
 
-def save(db, url, vectors):
-    db.create({'url': url, 'words': vectors, 'type': 'feedvectors'})
-
-def delete_views(dbname='feeds'):
+def delete_views(dbname):
     "Delete feed vector views."
     db = Server()[dbname]
     del db['_design/feedvectors']
 
-def create_views(dbname='feeds'):
+def create_views(dbname):
     "Create views for feed vectors."
     doc = {
       "language": "javascript",
