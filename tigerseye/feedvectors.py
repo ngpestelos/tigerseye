@@ -31,7 +31,7 @@ def strip_all(srcdbname, destdbname):
         for e in doc['entries']:
             wc = stripper.getwordcounts(e['description'])
             entrywords[e['title']] = wc
-        destdb.create({'url': url, 'words': vectors, 'type': 'feedvectors'})
+        destdb.create({'url': doc['link'], 'words': entrywords, 'type': 'feedvectors'})
 
 def delete_views(dbname):
     "Delete feed vector views."
