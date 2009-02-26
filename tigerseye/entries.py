@@ -43,6 +43,11 @@ def create_views(dbname):
           "map": """function(doc) {
                       if (doc.type == 'entries') emit(doc._id, null);
                     }"""
+        },
+        "by_id": {
+          "map": """function(doc) {
+                      if (doc.type == 'entries') emit(doc._id, doc);
+                    }"""
         }
       }
     }
