@@ -28,7 +28,9 @@ def get_ids(dbname):
 def delete_all(dbname):
     "Delete feed vectors"
     db = Server()[dbname]
-    pass 
+    for id in get_ids(dbname):
+        doc = db[id]
+        db.delete(doc)
 
 def strip_all(srcdbname, destdbname):
     "Strip all words from feeds' entries."
@@ -62,8 +64,17 @@ def create_views(dbname):
           "map": """function(doc) {
                       if (doc.type == 'feedvectors') emit(doc._id, null);
                     }"""
+        },
+        "by_url": {
+          "map": """function(doc) {
+                      if (doc.type == 'feedvectors') emit(doc.url, doc.words);
+                    }"""
         }
       }
     }
     db = Server()[dbname]
     db['_design/feedvectors'] = doc
+
+def get_wordcount(dbname, url):
+    db = Server()[dbname]
+    vec = [r.value for r in db.view('feedvectors/by_url')][0]

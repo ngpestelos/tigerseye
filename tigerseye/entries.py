@@ -48,6 +48,11 @@ def create_views(dbname):
           "map": """function(doc) {
                       if (doc.type == 'entries') emit(doc._id, doc);
                     }"""
+        },
+        "urls_by_id": {
+          "map": """function(doc) {
+                      if (doc.type == 'entries') emit(doc._id, doc.link);
+                    }"""
         }
       }
     }
@@ -58,6 +63,11 @@ def get_urls(dbname):
     "Returns a list of URLs."
     db = Server()[dbname]
     return [r.key for r in db.view('entries/urls')]
+
+def get_urls_by_id(dbname):
+    "Returns a list of Document ID, URL pairs."
+    db = Server()[dbname]
+    return [(r.key, r.value) for r in db.view('entries/urls_by_id')]
 
 def delete_all(dbname):
     "Removes all feeds with entries"
