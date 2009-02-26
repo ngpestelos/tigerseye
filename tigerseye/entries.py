@@ -122,3 +122,7 @@ def load_from_dir(feed_dir, dbname):
             create_document(db, d.feed.link, d.feed.title, d.entries)
         except:
             print "Unable to parse %s" % f
+
+def get_entries(dbname, id):
+    db = Server()[dbname]
+    return [r.value['entries'] for r in db.view('entries/by_id',key=id)][0]
