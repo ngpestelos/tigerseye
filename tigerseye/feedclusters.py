@@ -13,6 +13,7 @@
 
 import entries, stripper
 from math import sqrt
+from couchdb import Server
 
 def getwordcounts(dbname, id):
     feed_entries = entries.get_entries(dbname, id)
@@ -159,4 +160,16 @@ def printcluster(clust, labels=None, n=0):
 
     # now print the left and right clusters
     if clust.left != None: printcluster(clust.left, labels, n = n+1)
-    if clust.right != None: printcluster(clust.right, labels, n = n+1)        
+    if clust.right != None: printcluster(clust.right, labels, n = n+1)
+
+def savecluster(clust, urls, dbname, n=0):
+    db = Server()[dbname]
+    if clust.id < 0:
+        db.create({'type': 'node', 'depth': n, 'left': clust.left.id, \
+          'right': clust.right.id})
+    else:
+        db.create({'type': 'endpoint', 'depth': n, 'url': urls[clust.id], \
+          'cluster': clust.id})
+
+    if clust.left != None: savecluster(clust.left, urls, dbname, n = n+1)
+    if clust.right != None: savecluster(clust.right, urls, dbname, n = n+1)
