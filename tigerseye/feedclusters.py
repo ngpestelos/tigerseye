@@ -173,3 +173,40 @@ def savecluster(clust, urls, dbname, n=0):
 
     if clust.left != None: savecluster(clust.left, urls, dbname, n = n+1)
     if clust.right != None: savecluster(clust.right, urls, dbname, n = n+1)
+
+def delete_views(dbname):
+    db = Server()[dbname]
+    del db['_design/nodes']
+    del db['_design/clusters']
+
+def create_views(dbname):
+    db = Server()[dbname]
+    nodes = {
+      "language": "javascript",
+      "views": {
+        "all": {
+          "map": """function(doc) {
+                      if (doc.type == 'node') emit([doc.depth, doc._id], doc);
+                    }"""
+        },
+        "with_endpoints": {
+          "map": """function(doc) {
+                      if (doc.type == 'node' && 
+                        (doc.left > -1 || doc.right > -1))
+                          emit([doc.depth, doc._id], doc);
+                    }"""
+        }
+      }
+    }
+    db['_design/nodes'] = nodes
+    clusters = {
+      "language": "javascript",
+      "views": {
+        "all": {
+          "map": """function(doc) {
+                      emit([doc.cluster, doc._id], doc);
+                    }"""
+        }
+      }
+    }
+    db['_design/clusters'] = clusters
