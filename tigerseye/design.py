@@ -3,7 +3,8 @@ from couchdb import Server
 doc = {
   'language' : 'javascript',
   'views' : {
-    'feeds' : { 'map' : 'function(doc) { emit(doc.feedUrl, doc); }' }
+    'feeds'       : { 'map' : 'function(doc) { emit(doc.feedUrl, doc); }' },
+    'feed_urls'   : { 'map' : 'function(doc) { emit(doc.feedUrl, null); }' }
   }
 }
 
