@@ -15,34 +15,26 @@ import feedparser
 from couchdb import Server
 import hashlib, random, re
 
-def load_from_file(filename, dbname='entries'):
-    "Extract entries from a file"
-    def do_insert(docs):
-        for entry in docs:
-            try:
-                db[entry['entryUrl']] = entry
-            except:
-                print "Failed to add entry"
-                continue
-
-    d = feedparser.parse(file(filename))
-    db = Server()[dbname]
-    try:
-        docs = create_documents(db, d.feed.link, d.feed.title, d.entries)
-    except:
-        print "Unable to create documents for %s" % filename
-    else:
-        do_insert(docs)
- 
-def create_documents(db, link, title, entries):
-    def make_doc(entry):
-        return {'feedUrl': link, 'feedTitle': title, \
-                'entryUrl': entry['link'], 'entryTitle': entry['title'], \
-                'description': entry.get('description') or e.get('subtitle'), \
-                'updated': entry['updated']}
-
-    return [make_doc(e) for e in entries]
-
-def load_from_dir(feed_dir, dbname='entries'):
+def load_from_dir(feed_dir, dbname):
+    "Load previously saved feeds"
     for f in glob("%s/*.txt" % feed_dir):
         load_from_file(f, dbname)
+
+def insert_feed(feed, entries, db):
+    if feed.has_key('updated_parsed'):
+        del feed['updated_parsed']
+    feed['type'] = 'feed'
+    for entry in entries:
+        if entry.has_key('updated_parsed'):
+            del entry['updated_parsed']
+        if entry.has_key('published_parsed'):
+            del entry['published_parsed']
+    feed['entries'] = entries
+    db.create(feed)
+
+def load_from_file(filename='/n/data/feeds/feb4e15bb6c3095177b25c0127efdbeb39a6627e.txt', dbname='feeds'):
+    "Extract entries from a file"
+    d = feedparser.parse(file(filename))
+    db = Server()[dbname]
+    print d.entries[0]
+    insert_feed(d.feed, d.entries, db)
