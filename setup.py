@@ -14,7 +14,7 @@ except ImportError:
 
 setup(
   name = 'Tigerseye',
-  version = '0.1',
+  version = '0.3.2',
   description = 'Processing feed URLs',
   long_description = """Import and manipulate feed URLs""",
   author = 'Nestor G Pestelos Jr',
